@@ -3,12 +3,16 @@ package passwordgenerator;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 /**
  * PasswordGenerator
  */
 public class PasswordGenerator {
+
+    private static final ResourceBundle MESSAGES_FR = ResourceBundle.getBundle("Messages_fr");
+    private static final ResourceBundle MESSAGES_EN = ResourceBundle.getBundle("Messages_en");
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -17,7 +21,7 @@ public class PasswordGenerator {
 
         int length;
         do {
-            System.out.println((languageChoice.equals("fr")) ? "Entrez la longueur du mot de passe (minimum 8 caractères) : " : "Enter the password length (minimum 8 characters): ");
+            System.out.println(getMessage("enter_password_length", languageChoice));
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
@@ -28,10 +32,10 @@ public class PasswordGenerator {
             try {
                 length = Integer.parseInt(input);
                 if (length < 8) {
-                    System.out.println((languageChoice.equals("fr")) ? "La longueur du mot de passe doit être au minimum égale à 8." : "The password length must be at least 8.");
+                    System.out.println(getMessage("password_length_error", languageChoice));
                 }
             } catch (NumberFormatException e) {
-                System.out.println((languageChoice.equals("fr")) ? "Veuillez entrer un nombre valide." : "Please enter a valid number.");
+                System.out.println(getMessage("invalid_number", languageChoice));
                 length = -1;
             }
         } while (length < 8);
@@ -39,82 +43,65 @@ public class PasswordGenerator {
         boolean includeUpperCase, includeLowerCase, includeDigits, includeSpecialChars;
 
         do {
-            includeUpperCase = getBooleanInput((languageChoice.equals("fr")) ? "Voulez-vous inclure des lettres majuscules ? (Oui/Non) : " : "Include uppercase letters? (Yes/No): ", scanner, languageChoice);
-            includeLowerCase = getBooleanInput((languageChoice.equals("fr")) ? "Voulez-vous inclure des lettres minuscules ? (Oui/Non) : " : "Include lowercase letters? (Yes/No): ", scanner, languageChoice);
-            includeDigits = getBooleanInput((languageChoice.equals("fr")) ? "Voulez-vous inclure des chiffres ? (Oui/Non) : " : "Include digits? (Yes/No): ", scanner, languageChoice);
-            includeSpecialChars = getBooleanInput((languageChoice.equals("fr")) ? "Voulez-vous inclure des caractères spéciaux ? (Oui/Non) : " : "Include special characters? (Yes/No): ", scanner, languageChoice);
+            includeUpperCase = getBooleanInput("include_uppercase", scanner, languageChoice);
+            includeLowerCase = getBooleanInput("include_lowercase", scanner, languageChoice);
+            includeDigits = getBooleanInput("include_digits", scanner, languageChoice);
+            includeSpecialChars = getBooleanInput("include_special_chars", scanner, languageChoice);
 
             if (!(includeUpperCase || includeLowerCase || includeDigits || includeSpecialChars)) {
-                System.out.println((languageChoice.equals("fr")) ? "Vous devez inclure au moins un type de caractère. Veuillez répondre par 'Oui' pour au moins une option." : "You must include at least one type of character. Please answer 'Yes' for at least one option.");
+                System.out.println(getMessage("include_at_least_one_character", languageChoice));
             }
         } while (!(includeUpperCase || includeLowerCase || includeDigits || includeSpecialChars));
 
         String password = generatePassword(length, includeUpperCase, includeLowerCase, includeDigits, includeSpecialChars, languageChoice);
 
-        System.out.println((languageChoice.equals("fr")) ? "Mot de passe généré : " + password : "Generated password: " + password);
+        System.out.println(getMessage("password_generated", languageChoice) + password);
 
         savePasswordToFile("- " + password, languageChoice);
     }
 
-    private static boolean getBooleanInput(String message, Scanner scanner, String language) {
+    private static boolean getBooleanInput(String messageKey, Scanner scanner, String language) {
         boolean result;
         String userInput;
         do {
-            System.out.print(message);
+            System.out.print(getMessage(messageKey, language));
             userInput = scanner.nextLine().trim().toLowerCase();
-
+    
             if (language.equals("fr")) {
-                if (userInput.equals("oui")) {
-                    result = true;
-                } else if (userInput.equals("non")) {
-                    result = false;
-                } else {
-                    System.out.println("Veuillez répondre par 'Oui' ou 'Non'.");
-                    result = false;
-                }
+                result = userInput.equals("oui");
             } else { // Default to English
-                if (userInput.equals("yes")) {
-                    result = true;
-                } else if (userInput.equals("no")) {
-                    result = false;
-                } else {
-                    System.out.println("Please answer with 'Yes' or 'No'.");
-                    result = false;
-                }
+                result = userInput.equals("yes");
             }
-        } while (!(userInput.equals("yes") || userInput.equals("no") || userInput.equals("oui") || userInput.equals("non")));
+    
+            if (!(result || userInput.equals("non") || userInput.equals("no"))) {
+                System.out.println(getMessage("yes_no_response_required", language));
+            }
+    
+        } while (!(result || userInput.equals("non") || userInput.equals("no")));
         return result;
     }
+    
 
     private static String getLanguageChoice(Scanner scanner) {
         String languageChoice;
         do {
-            System.out.println("Choose a language (English/French): ");
+            System.out.println(getMessage("choose_language", "en"));
             languageChoice = scanner.nextLine().trim().toLowerCase();
-
+    
             if (!(languageChoice.equals("english") || languageChoice.equals("french") || languageChoice.equals("fr"))) {
-                System.out.println("Please choose 'English' or 'French'.");
+                System.out.println(getMessage("invalid_language_choice", "en"));
             }
         } while (!(languageChoice.equals("english") || languageChoice.equals("french") || languageChoice.equals("fr")));
         return languageChoice.equals("french") ? "fr" : "en";
-    }
-
+    }    
 
     private static void savePasswordToFile(String password, String languageChoice) {
         try (FileWriter writer = new FileWriter("passwords.txt", true)) {
             writer.write(password + System.lineSeparator());
-            
-            String successMessage = (languageChoice.equals("fr")) ?
-                "Mot de passe enregistré dans le fichier 'passwords.txt'." :
-                "Password saved to 'passwords.txt' file.";
-                
-            System.out.println(successMessage);
+
+            System.out.println(getMessage("password_saved", languageChoice));
         } catch (IOException e) {
-            String errorMessage = (languageChoice.equals("fr")) ?
-                "Erreur lors de l'enregistrement du mot de passe dans le fichier." :
-                "Error saving password to file.";
-                
-            System.out.println(errorMessage);
+            System.out.println(getMessage("error_saving_password", languageChoice));
             e.printStackTrace();
         }
     }
@@ -127,11 +114,7 @@ public class PasswordGenerator {
         String specialChars = "!@#$%^&*()-_=+[]{}|;:'\",.<>?";
 
         if (!includeUpperCase && !includeLowerCase && !includeDigits && !includeSpecialChars) {
-            String message = (languageChoice.equals("fr")) ?
-                "Vous devez inclure au moins un type de caractère. Veuillez répondre par 'Oui' pour au moins une option." :
-                "You must include at least one type of character. Please answer 'Yes' for at least one option.";
-            
-            System.out.println(message);
+            System.out.println(getMessage("include_at_least_one_character", languageChoice));
             return "";
         }
 
@@ -160,5 +143,10 @@ public class PasswordGenerator {
         }
 
         return password.toString();
+    }
+
+    private static String getMessage(String key, String language) {
+        ResourceBundle messages = (language.equals("fr")) ? MESSAGES_FR : MESSAGES_EN;
+        return messages.getString(key);
     }
 }
