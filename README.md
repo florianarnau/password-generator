@@ -1,37 +1,3 @@
-# Générateur de Mot de Passe
-
-## Description
-Ce programme Java permet de générer des mots de passe aléatoires en fonction des préférences de l'utilisateur.
-
-## Fonctionnalités
-- Demande à l'utilisateur la longueur du mot de passe.
-- Permet à l'utilisateur de choisir d'inclure des lettres majuscules, des lettres minuscules, des chiffres et des caractères spéciaux.
-- Génère un mot de passe aléatoire en fonction des choix de l'utilisateur.
-- Enregistre chaque mot de passe généré dans un fichier texte.
-
-## Comment Utiliser
-1. Clonez le projet sur votre machine locale.
-```bash
-git clone https://github.com/votre_nom/password-generator.git
-```
-
-2. Ouvrez le projet dans votre IDE.
-
-3. Exécutez la classe principale `PasswordGenerator`.
-
-4. Suivez les instructions pour générer un mot de passe.
-
-## Enregistrement des Mots de Passe
-Chaque mot de passe généré sera enregistré dans le fichier `passwords.txt` à la racine du projet.
-
-## Auteur
-Florian Arnau
-
-## Licence
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-<hr>
-
 # Password Generator
 
 ## Description
