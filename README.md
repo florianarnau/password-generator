@@ -12,7 +12,7 @@ This Java program generates random passwords based on user preferences.
 ## How to Use
 1. Clone the project to your local machine.
 ```bash
-git clone https://github.com/your_name/password-generator.git
+git clone https://github.com/florianarnau/password-generator.git
 ```
 
 2. Open the project in your IDE.
